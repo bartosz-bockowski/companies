@@ -1,5 +1,7 @@
 package com.example.companies.config;
 
+import com.example.companies.exception.MustBeNullException;
+import com.example.companies.exception.NoEmployeesException;
 import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,16 @@ import java.util.Optional;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(NoEmployeesException.class)
+    public ResponseEntity<String> handleNoEmployeesException(NoEmployeesException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MustBeNullException.class)
+    public ResponseEntity<String> handleMustBeNullException(MustBeNullException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(PSQLException.class)
     public ResponseEntity<String> handlePSQLExceptions(PSQLException e) {

@@ -7,6 +7,7 @@ import com.example.companies.domain.Employer;
 import com.example.companies.dto.AddEmployeeDTO;
 import com.example.companies.dto.AddEmployerDTO;
 import com.example.companies.dto.EmployeeDTO;
+import com.example.companies.exception.NoEmployeesException;
 import com.example.companies.exception.NotFoundException;
 import com.example.companies.repository.EmployerRepository;
 import com.querydsl.core.BooleanBuilder;
@@ -42,28 +43,11 @@ public class EmployerService {
     }
 
     public AddEmployerDTO save(ExtendedEmployerCommand employerCommand) {
-        Employer employer = modelMapper.map(employerCommand, Employer.class);
-
-        employer.setEmployees(employerCommand.getEmployees().stream()
-                .map(employeeCommand -> {
-                    Employee employee = modelMapper.map(employeeCommand, Employee.class);
-                    try {
-                        return employeeService.findOneByEmail(employee.getEmail());
-                    } catch (NotFoundException e) {
-                        return employeeService.save(employee);
-                    }
-                })
-                .filter(Objects::nonNull)
-                .toList());
+        Employer employer = convertEmployerCommandToEmployer(employerCommand);
 
         AddEmployerDTO result = modelMapper.map(employerRepository.save(employer), AddEmployerDTO.class);
-        result.setEmployees(employer.getEmployees().stream()
-                .map(employee -> {
-                    AddEmployeeDTO employeeDTO = modelMapper.map(employee, AddEmployeeDTO.class);
-                    employeeDTO.setExisting(!employee.getEmployers().isEmpty());
-                    return employeeDTO;
-                })
-                .toList());
+
+        result.setEmployees(convertEmployeesToAddEmployeeDTOs(employer.getEmployees()));
 
         return result;
     }
@@ -87,4 +71,37 @@ public class EmployerService {
 
         return result;
     }
+
+    public Employer convertEmployerCommandToEmployer(ExtendedEmployerCommand employerCommand) {
+        Employer employer = modelMapper.map(employerCommand, Employer.class);
+
+        if (Objects.isNull(employerCommand.getEmployees())) {
+            throw new NoEmployeesException("No employees entered. You must enter at least one employee while creating an employer");
+        }
+
+        employer.setEmployees(employerCommand.getEmployees().stream()
+                .map(employeeCommand -> {
+                    Employee employee = modelMapper.map(employeeCommand, Employee.class);
+                    try {
+                        return employeeService.findOneByEmail(employee.getEmail());
+                    } catch (NotFoundException e) {
+                        return employeeService.save(employee);
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList());
+
+        return employer;
+    }
+
+    public List<AddEmployeeDTO> convertEmployeesToAddEmployeeDTOs(List<Employee> employees) {
+        return employees.stream()
+                .map(employee -> {
+                    AddEmployeeDTO employeeDTO = modelMapper.map(employee, AddEmployeeDTO.class);
+                    employeeDTO.setExisting(!employee.getEmployers().isEmpty());
+                    return employeeDTO;
+                })
+                .toList();
+    }
+
 }

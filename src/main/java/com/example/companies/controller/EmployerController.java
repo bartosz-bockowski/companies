@@ -4,6 +4,7 @@ import com.example.companies.command.ExtendedEmployerCommand;
 import com.example.companies.domain.Employer;
 import com.example.companies.dto.AddEmployerDTO;
 import com.example.companies.dto.EmployerDTO;
+import com.example.companies.exception.MustBeNullException;
 import com.example.companies.service.EmployerService;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class EmployerController {
     @PostMapping
     public ResponseEntity<AddEmployerDTO> save(@Valid @RequestBody ExtendedEmployerCommand employerCommand) {
         if (Objects.nonNull(employerCommand.getId())) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new MustBeNullException("ID must be null");
         }
         return new ResponseEntity<>(employerService.save(employerCommand), HttpStatus.CREATED);
     }
