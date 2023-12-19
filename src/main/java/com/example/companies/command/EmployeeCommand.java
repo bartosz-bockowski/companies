@@ -11,7 +11,7 @@ import javax.validation.constraints.NotEmpty;
 @ToString
 public class EmployeeCommand {
 
-    @NotEmpty
+    @NotEmpty(message = "email address cannot be empty")
     private String email;
 
 }

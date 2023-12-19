@@ -17,8 +17,7 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    @NotEmpty
+    @NotEmpty(message = "email address cannot be empty")
     private String email;
 
     @ManyToMany(mappedBy = "employees")

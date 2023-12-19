@@ -18,12 +18,10 @@ public class Employer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    @NotEmpty
+    @NotEmpty(message = "name cannot be empty")
     private String name;
 
-    @Column(unique = true)
-    @Length(min = 3, max = 3)
+    @Length(min = 3, max = 3, message = "length must be 3")
     private String code;
 
     @ManyToMany
