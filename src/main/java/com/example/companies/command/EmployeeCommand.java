@@ -1,14 +1,10 @@
 package com.example.companies.command;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 
-@Getter
-@Setter
-@ToString
+@Data
 public class EmployeeCommand {
 
     @NotEmpty(message = "email address cannot be empty")

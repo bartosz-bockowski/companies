@@ -1,10 +1,10 @@
 package com.example.companies.command;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class ExtendedEmployerCommand extends EmployerCommand {
 
     private Long id;

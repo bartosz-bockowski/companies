@@ -7,7 +7,6 @@ import com.example.companies.domain.Employer;
 import com.example.companies.dto.AddEmployeeDTO;
 import com.example.companies.dto.AddEmployerDTO;
 import com.example.companies.dto.EmployeeDTO;
-import com.example.companies.exception.NoEmployeesException;
 import com.example.companies.exception.NotFoundException;
 import com.example.companies.repository.EmployerRepository;
 import com.querydsl.core.BooleanBuilder;
@@ -74,10 +73,6 @@ public class EmployerService {
 
     public Employer convertEmployerCommandToEmployer(ExtendedEmployerCommand employerCommand) {
         Employer employer = modelMapper.map(employerCommand, Employer.class);
-
-        if (Objects.isNull(employerCommand.getEmployees())) {
-            throw new NoEmployeesException("No employees entered. You must enter at least one employee while creating an employer");
-        }
 
         employer.setEmployees(employerCommand.getEmployees().stream()
                 .map(employeeCommand -> {
